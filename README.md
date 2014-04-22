@@ -23,9 +23,11 @@ ___
     + OSX/Unix - `~/.qgis2/python/plugins`
 <br> ![After moving into Plugins folder](readme/img/2.png)
 6. Load QGIS and go to Plugins -> Manage and Install Plugins
-> ![Loading the Plugins window](readme/img/3.png)
+<br>
+![Loading the Plugins window](readme/img/3.png)
 7. Under the Installed tab, check the box next to the **Encoded Polyline Exporter** plugin (an icon should appear on your toolbar)
-> ![Checking the Encoded Polyline box](readme/img/4.png)
+<br>
+![Checking the Encoded Polyline box](readme/img/4.png)
 8. You're good to use the plugin!
 
 ### Automatic
@@ -37,10 +39,12 @@ ___
 
 1. Load up a SHP or any file with boundary demarcations
 2. Click the **Encoded Polyline** icon
-> ![After clicking the Encoded Polyline icon](readme/img/5.png)
+<br>
+![After clicking the Encoded Polyline icon](readme/img/5.png)
 3. Choose a Destination and column Prefix, then click OK
 4. Open the created CSV in your spreadsheet application
-> ![Your data with the encoded polylines in a single column](readme/img/6.png)
+<br>
+![Your data with the encoded polylines in a single column](readme/img/6.png)
 5. Use your data wherever you need it!
 
 ___

@@ -4,7 +4,7 @@ Encoded polylines are boundary definitions in a space-saving and efficient forma
 <br>
 They are used in many applications, from GIS tools to BI applications and more.
 <br>
-The **Encoded Polyline** plugin for QGIS allows you to export encoded polyines in a friendly CSV format for use in your applications.
+The **Encoded Polyline** plugin for QGIS allows you to export encoded polylines in a friendly CSV format for use in your applications.
 
 ___
 

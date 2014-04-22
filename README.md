@@ -13,7 +13,8 @@ ___
 
 ### Manual
 1. Install QGIS from [QGIS.org](http://www.qgis.org)
-> ![Downloading QGIS](readme/img/1.png)
+<br>
+![Downloading QGIS](readme/img/1.png)
 2. Download the Encoded Polyline source files from [Github](http://www.github.com/) (Click the Download ZIP button in the lower right)
 3. Extract the downloaded ZIP file
 4. Cut or Copy the **encodedPolyline** folder from inside the **dist** folder

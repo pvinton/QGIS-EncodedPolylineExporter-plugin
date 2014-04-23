@@ -51,6 +51,7 @@ ___
 <br>
 ![After clicking the Encoded Polyline icon](readme/img/5.png)
 3. Choose a Destination and column Prefix, then click OK
+    + If you see a python error after clicking save, try again and choose a different save location
 4. Open the created CSV in your spreadsheet application
 <br>
 ![Your data with the encoded polylines in a single column](readme/img/6.png)

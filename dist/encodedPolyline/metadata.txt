@@ -12,8 +12,7 @@
 name=Encoded Polyline Exporter
 qgisMinimumVersion=2.0
 description=Export a vector layer to a .csv file in Encoded Polyline format
-category = Vector
-version=0.2
+version=0.1
 author=Patrick Vinton
 email=patrickvinton@hotmail.com
 
@@ -25,14 +24,12 @@ email=patrickvinton@hotmail.com
 # changelog=
 
 # tags are comma separated with spaces allowed
-tags=encodedpolyline,polyline,analytics8
+tags=
 
-# req data
-homepage=https://github.com/pvinton/QGIS-EncodedPolylineExporter-plugin
-tracker=https://github.com/pvinton/QGIS-EncodedPolylineExporter-plugin/issues
-repository=https://github.com/pvinton/QGIS-EncodedPolylineExporter-plugin
+homepage=
+tracker=
+repository=
 icon=icon.png
-
 # experimental flag
 experimental=False
 

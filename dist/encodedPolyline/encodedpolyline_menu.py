@@ -42,6 +42,7 @@ class encodedPolyline_menu:
             QObject.connect(self.encodedPolylineAction, SIGNAL("triggered()"), self.initiateEncodedPolylineDialog)
             #self.import_export_menu.addAction(self.encodedPolylineAction)
             
+            self.iface.addPluginToVectorMenu("&Encoded Polyline", self.encodedPolylineAction)
             self.iface.addToolBarIcon(self.encodedPolylineAction)
 
 	def unload(self):

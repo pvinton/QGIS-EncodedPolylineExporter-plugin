@@ -85,6 +85,23 @@ class encodedPolyline:
 
 def encodedPolyline_export_to_csv(qgis, layername, node_filename, outputFieldPrefix, field_delimiter, line_terminator):
     layer = find_layer(layername)
+<<<<<<< HEAD
+=======
+    
+    forwardSlashIndex = node_filename[::-1].find("/")
+    backSlashIndex = node_filename[::-1].find("\\") 
+    
+    if forwardSlashIndex < 0:
+        forwardSlashIndex = 9999999
+    
+    if backSlashIndex < 0:
+        backSlashIndex = 9999999
+    
+    if forwardSlashIndex < backSlashIndex:
+        slashIndex = forwardSlashIndex+1
+    else:
+        slashIndex = backSlashIndex+1
+>>>>>>> origin/dev
 
     if (layer == None) or (layer.type() != QgsMapLayer.VectorLayer):
         return "Invalid Vector Layer " + layername
@@ -97,6 +114,11 @@ def encodedPolyline_export_to_csv(qgis, layername, node_filename, outputFieldPre
             attribute_header.append(field.name())
 
     nodefile = open(node_filename, 'w')
+
+    paramsFile = os.path.dirname(__file__) + "/LastOutputFileLocation.txt"
+    paramsFile = open(paramsFile, "w")
+    paramsFile.write(node_filename[0:-slashIndex])
+    paramsFile.close()
     
     attribute_header.append(outputFieldPrefix + "Boundary")
     attribute_header.append(outputFieldPrefix + "CenterLat")
@@ -198,10 +220,17 @@ def encodedPolyline_export_to_csv(qgis, layername, node_filename, outputFieldPre
                     plnge5 = round(plng * 100000)
                     late5 = round(lat * 100000)
                     lnge5 = round(lng * 100000)
+<<<<<<< HEAD
 
                     dlat = late5 - plate5
                     dlng = lnge5 - plnge5
 
+=======
+
+                    dlat = late5 - plate5
+                    dlng = lnge5 - plnge5
+
+>>>>>>> origin/dev
                     encodedLat = encodeCoord(dlat)
                     encodedLng = encodeCoord(dlng)
                     

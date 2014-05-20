@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_encodedpolyline.ui'
 #
-# Created: Sun Feb 02 15:58:15 2014
+# Created: Tue May 20 00:52:41 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -25,10 +25,10 @@ except AttributeError:
 
 class Ui_encodedPolyline(object):
     def setupUi(self, encodedPolyline):
-        encodedPolyline.setObjectName(_fromUtf8("Encoded Polyline Builder"))
-        encodedPolyline.resize(376, 190)
+        encodedPolyline.setObjectName(_fromUtf8("encodedPolyline"))
+        encodedPolyline.resize(376, 207)
         self.buttonBox = QtGui.QDialogButtonBox(encodedPolyline)
-        self.buttonBox.setGeometry(QtCore.QRect(110, 150, 161, 32))
+        self.buttonBox.setGeometry(QtCore.QRect(100, 172, 161, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
@@ -55,6 +55,11 @@ class Ui_encodedPolyline(object):
         self.outputFieldPrefixDescriptor = QtGui.QLabel(encodedPolyline)
         self.outputFieldPrefixDescriptor.setGeometry(QtCore.QRect(10, 100, 151, 22))
         self.outputFieldPrefixDescriptor.setObjectName(_fromUtf8("outputFieldPrefixDescriptor"))
+        self.checkBox = QtGui.QCheckBox(encodedPolyline)
+        self.checkBox.setEnabled(True)
+        self.checkBox.setGeometry(QtCore.QRect(10, 150, 351, 18))
+        self.checkBox.setChecked(True)
+        self.checkBox.setObjectName(_fromUtf8("checkBox"))
 
         self.retranslateUi(encodedPolyline)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), encodedPolyline.accept)
@@ -67,6 +72,7 @@ class Ui_encodedPolyline(object):
         self.outputFilename.setText(_translate("encodedPolyline", "boundaries.csv", None))
         self.outputFileDescriptor.setText(_translate("encodedPolyline", "Output CSV File", None))
         self.sourceLayerDescriptor.setText(_translate("encodedPolyline", "Source Layer", None))
-        self.outputFieldPrefix.setText(_translate("encodedPolyline", "", None))
+        self.outputFieldPrefix.setText(_translate("encodedPolyline", "boundaries.csv", None))
         self.outputFieldPrefixDescriptor.setText(_translate("encodedPolyline", "Field Name Prefix (optional)", None))
-	
+        self.checkBox.setText(_translate("encodedPolyline", "Simplify geometries", None))
+

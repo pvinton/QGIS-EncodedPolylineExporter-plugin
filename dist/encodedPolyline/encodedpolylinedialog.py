@@ -91,8 +91,9 @@ class encodedPolylineDialog(QDialog, Ui_encodedPolyline):
         sourceLayer = self.sourceLayer.currentText()
         outputFilename = self.outputFilename.displayText()
         outputFieldPrefix = self.outputFieldPrefix.displayText()
+        simplifyGeom = self.checkBox.checkState()
         
-        message = encodedPolyline_export_to_csv(self.iface, sourceLayer, outputFilename, outputFieldPrefix, delimiter, lineterminator)
+        message = encodedPolyline_export_to_csv(self.iface, sourceLayer, outputFilename, outputFieldPrefix, simplifyGeom, delimiter, lineterminator)
         if message <> None:
             QMessageBox.critical(self.iface.mainWindow(), "Geometry Export", message)
 

@@ -31,6 +31,7 @@ import csv
 import os.path
 import time
 
+import csv
 
 class encodedPolyline:
 
@@ -106,8 +107,10 @@ def encodedPolyline_export_to_csv(qgis, layername, node_filename, outputFieldPre
         slashIndex = backSlashIndex+1
         
     nodefile = open(node_filename, 'w')
+    
+    pluginPath = os.path.dirname(__file__)
  
-    paramsFile = os.path.dirname(__file__) + "/LastOutputFileLocation.txt"
+    paramsFile = pluginPath + "/LastOutputFileLocation.txt"
     paramsFile = open(paramsFile, "w")
     outputPath = node_filename[0:-slashIndex]
     paramsFile.write(outputPath)
@@ -117,21 +120,37 @@ def encodedPolyline_export_to_csv(qgis, layername, node_filename, outputFieldPre
 
 
     if simplifyGeom == 2:
-        thresholds = [0,0.00001,0.00002,0.00003,0.00004,0.00005,0.00006,0.00007,0.00008,0.00009,0.0001,0.0002,0.0003,0.0004,0.0005,0.0006,0.0007,0.0008,0.0009,0.001,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.009,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,10,20]
-        tolerances = [0,0.00005,0.000065,0.00008,0.000095,0.00011,0.000125,0.00014,0.000155,0.00017,0.0002,0.00025,0.0003,0.00035,0.0004,0.00045,0.0005,0.00055,0.0006,0.00065,0.00088,0.00111,0.00134,0.00157,0.0018,0.00203,0.00226,0.00249,0.003,0.0034,0.0038,0.0042,0.0046,0.005,0.0054,0.0058,0.0062,0.007,0.0087,0.0104,0.0121,0.0138,0.0155,0.0172,0.0189,0.0206,0.0223,0.0273,0.0323,0.0373,0.045,0.1]
+        f = open(pluginPath + '/simplification_thresholds.csv', 'rt')
+        reader = csv.reader(f)
+        rownum = 0
+        thresholds = [];
+        tolerances = [];
+        for row in reader:
+            thresholds.append(float(row[0]))
+            tolerances.append(float(row[1]))
+            rownum += 1
+        
+        #thresholds = [0,0.00001,0.00002,0.00003,0.00004,0.00005,0.00006,0.00007,0.00008,0.00009,0.0001,0.0002,0.0003,0.0004,0.0005,0.0006,0.0007,0.0008,0.0009,0.001,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.009,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,10,20]
+        #tolerances = [0,0.00005,0.000065,0.00008,0.000095,0.00011,0.000125,0.00014,0.000155,0.00017,0.0002,0.00025,0.0003,0.00035,0.0004,0.00045,0.0005,0.00055,0.0006,0.00065,0.00088,0.00111,0.00134,0.00157,0.0018,0.00203,0.00226,0.00249,0.003,0.0034,0.0038,0.0042,0.0046,0.005,0.0054,0.0058,0.0062,0.007,0.0087,0.0104,0.0121,0.0138,0.0155,0.0172,0.0189,0.0206,0.0223,0.0273,0.0323,0.0373,0.045,0.1]
         
         qgis.mainWindow().statusBar().showMessage('Saving temporary shapefile...') 
-        QgsVectorFileWriter.writeAsVectorFormat(layer, outputFilePrefix+"_temp.shp", "utf-8", None, "ESRI Shapefile")
+        QgsVectorFileWriter.writeAsVectorFormat(layer, outputFilePrefix+"_temp.shp", "system", None, "ESRI Shapefile")
         
         qgis.mainWindow().statusBar().showMessage('Loading temporary shapefile...')
         layer = QgsVectorLayer(outputFilePrefix+"_temp.shp", time.strftime("%H%M%S"), "ogr")
         layer.startEditing()
-      
-        i=0
+        
         feature_index = 0
         feature_count = layer.dataProvider().featureCount()
+        if (feature_count < 100):
+            counterIndex = 1
+        else:
+            counterIndex = 10
+        
+        
+        i=0
         while i<len(tolerances)-1:
-            tolerance = tolerances[i];
+            tolerance = tolerances[i-1];
             lowerThreshold = str(thresholds[i]);
             upperThreshold = str(thresholds[i+1]);
             thresholdExpression = '$area>'+lowerThreshold+' and $area<='+upperThreshold
@@ -140,14 +159,15 @@ def encodedPolyline_export_to_csv(qgis, layername, node_filename, outputFieldPre
             features = layer.getFeatures(request)
             for feature in features:
                 feature_index +=1
-                if (feature_index % 10) == 0:
+                if (feature_index % counterIndex) == 0:
                     message = "Simplifying feature " + unicode(feature_index) + " of " + unicode(feature_count)
                     message += ' (' + thresholdExpression + ')'
                     qgis.mainWindow().statusBar().showMessage(message)
                 
                 fid = feature.id()
                 fgeom = feature.geometry()
-                if (fgeom.isGeosValid() and not fgeom.isGeosEmpty()):
+                fname = str(fid)
+                if (isGeomValid(fgeom, fname)):
                     fSimpGeom = fgeom.simplify(tolerance)
                     layer.changeGeometry(fid, fSimpGeom)
                     #feature.setGeometry(fSimpGeom)
@@ -157,8 +177,105 @@ def encodedPolyline_export_to_csv(qgis, layername, node_filename, outputFieldPre
         qgis.mainWindow().statusBar().showMessage('Committing simplifications...')
         layer.commitChanges()
         
+        
+        layer.startEditing()
+        feature_index = 0
+        features = layer.getFeatures()
+#         reSimplifyLargeFeatures = False
+         
+        while feature_index < feature_count:
+            for feature in features:
+                 
+                if (feature_index % counterIndex) == 0:
+                    message = "Removing small branches from feature " + unicode(feature_index+1) + " of " + unicode(feature_count)
+                    qgis.mainWindow().statusBar().showMessage(message)
+                 
+                fid = feature.id()
+                fgeom = feature.geometry()
+                fname = str(feature_index)
+                feature_index += 1
+                allBranchesValid = True
+                removeSmallBranches = True
+                 
+#                 if(fgeom.area() > 20):
+#                     reSimplifyLargeFeatures = True
+                 
+                if (isGeomValid(fgeom, fname)):
+                    if(fgeom.isMultipart() and removeSmallBranches):
+                        farea = fgeom.area()
+                        flength = fgeom.length()
+                        branches = fgeom.asGeometryCollection()
+                        firstValidBranch = True 
+                        branch_index = 0
+                        removedBranchCounter = 0
+                        
+                        for branch in branches:
+                            branchID = fname + '.' + str(branch_index)
+                            if (isBranchValid(branch, branchID)):
+                                if(branch.length()/flength>.01 or branch.area()/farea>.01 or branch.area()>.1):
+                                    if(firstValidBranch and isBranchValid(branch, branchID)):
+                                        firstValidBranch = False
+                                        prunedBranches = branch
+                                         
+#                                         simpGeomTemp = fSimplify(branch, thresholds, tolerances)
+#                                         branchID = fname + '.' + str(branch_index) + 's'
+#                                         if(isBranchValid(simpGeomTemp, branchID)):
+#                                             simpGeom = simpGeomTemp
+#                                         else:
+#                                             simpGeom = branch
+                                         
+                                    else:
+                                        prunedBranches = prunedBranches.combine(branch)
+#                                         simpGeomTemp = simpGeom.combine( fSimplify(branch, thresholds, tolerances) )
+#                                         branchID = fname + '.' + str(branch_index) + 's'
+#                                         if(isBranchValid(simpGeomTemp, branchID)):
+#                                             simpGeom = simpGeomTemp
+#                                         else:
+#                                             simpGeom = simpGeom.combine(branch)
+                                else:
+                                    removedBranchCounter += 1
+                                     
+                            else:
+                                #print('Detected a corrupt branch within feature ' + str(fid) + '.  Must use original feature.')
+                                allBranchesValid = False
+                             
+                            branch_index += 1
+#                     else:
+#                         simpGeom = fSimplify(fgeom, thresholds, tolerances)
+                         
+                        if(allBranchesValid and removedBranchCounter>0):
+                            #print('Removed ' + str(removedBranchCounter) + ' small branches from feature ' + fname)
+                            layer.changeGeometry(fid, prunedBranches)
+                         
+         
+        qgis.mainWindow().statusBar().showMessage('Committing pruned branch simplifications...')
+        layer.commitChanges()
+#         layer.startEditing()
+#         
+#         if(reSimplifyLargeFeatures):
+#             feature_index = 0
+#             feature_count = layer.dataProvider().featureCount()
+#             features = layer.getFeatures()
+#             
+#             while feature_index < feature_count:
+#                 for feature in features:
+#                     fid = feature.id()
+#                     fgeom = feature.geometry()
+#                     feature_index += 1
+#                     
+#                     if(fgeom.area()>20):
+#                         print("Resimplifying large feature " + str(fid) + " in case its branches were not simplifiable")
+#                         message = "Resimplifying large feature " + str(fid) + " in case its branches were not simplifiable"
+#                         qgis.mainWindow().statusBar().showMessage(message)
+#                         
+#                         simpGeom = fSimplify(fgeom, thresholds, tolerances)
+#                         layer.changeGeometry(fid, simpGeom)
+            
+#         qgis.mainWindow().statusBar().showMessage('Committing simplifications...')
+#         layer.commitChanges()
+        
         qgis.mainWindow().statusBar().showMessage('Saving simplified shapefile...')
-        QgsVectorFileWriter.writeAsVectorFormat(layer, outputFilePrefix+"_simplified.shp", "utf-8", None, "ESRI Shapefile")
+        QgsVectorFileWriter.writeAsVectorFormat(layer, outputFilePrefix+"_simplified.shp", "system", None, "ESRI Shapefile")
 
     
     attribute_header = []
@@ -173,14 +290,23 @@ def encodedPolyline_export_to_csv(qgis, layername, node_filename, outputFieldPre
     attribute_header.append(outputFieldPrefix + "CenterLng")
     node_writer = csv.writer(nodefile, delimiter = field_delimiter, lineterminator = '\n', quoting=csv.QUOTE_NONNUMERIC)
     node_writer.writerow(attribute_header)
+    
+    
  
  
  
     feature_type = ""
+    feature_index = 0
+    features = layer.getFeatures()
     feature_count = layer.dataProvider().featureCount()
+    if (feature_count < 100):
+        counterIndex = 1
+    else:
+        counterIndex = 10
+    
     for feature_index, feature in enumerate(layer.dataProvider().getFeatures()):
-        if (feature_index % 10) == 0:
-            message = "Exporting feature " + unicode(feature_index) + " of " + unicode(feature_count)
+        if (feature_index % counterIndex) == 0:
+            message = "Exporting feature " + unicode(feature_index+1) + " of " + unicode(feature_count)
             qgis.mainWindow().statusBar().showMessage(message)
  
         if (feature.geometry() == None):
@@ -327,6 +453,7 @@ def encodedPolyline_export_to_csv(qgis, layername, node_filename, outputFieldPre
                 row.append(unicode(attribute).encode("utf-8"))
              
             encodedPolyline = ""
+            
              
             for polyline in polygon:
                  
@@ -370,6 +497,7 @@ def encodedPolyline_export_to_csv(qgis, layername, node_filename, outputFieldPre
  
         elif (feature.geometry().wkbType() == QGis.WKBMultiPolygon) or \
              (feature.geometry().wkbType() == QGis.WKBMultiPolygon25D):
+            
             multipolygon = feature.geometry().asMultiPolygon()
             
             if(feature.geometry().centroid() is not None): 
@@ -383,47 +511,47 @@ def encodedPolyline_export_to_csv(qgis, layername, node_filename, outputFieldPre
                  
             for polygon_index, polygon in enumerate(multipolygon):
                 ring_number = 0
- 
+                
                 for polyline in polygon:
                     shape_id = unicode(feature_index) + "." + unicode(polygon_index)
                     if ring_number > 0:
                         shape_id = shape_id + ".ring" + unicode(ring_number)
                     ring_number = ring_number + 1
-                     
+                      
                     plat = 0
                     plng = 0
- 
+  
                     for point in polyline:
                         lat = float(point.y())
                         lng = float(point.x())
-                         
+                          
                         plate5 = round(plat * 100000)
                         plnge5 = round(plng * 100000)
                         late5 = round(lat * 100000)
                         lnge5 = round(lng * 100000)
- 
+  
                         dlat = late5 - plate5
                         dlng = lnge5 - plnge5
- 
+  
                         encodedLat = encodeCoord(dlat)
                         encodedLng = encodeCoord(dlng)
-                         
+                          
                         encodedPolyline += encodedLat
                         encodedPolyline += encodedLng
-                         
+                          
                         plat = lat
                         plng = lng
-                         
+                          
                     encodedPolyline += '<br>'
-                     
+                      
                     row = [ ]
                     for attindex, attribute in enumerate(feature.attributes()):
                         if type(attribute) == float:
                             if attribute - round(attribute) == 0:
                                 attribute = int(round(attribute))
-                             
+                              
                         row.append(unicode(attribute).encode("utf-8"))
-             
+              
             encodedPolyline = encodedPolyline[0:-4]        
             row.append(encodedPolyline)
             row.append(centroidLat)
@@ -443,15 +571,15 @@ def encodedPolyline_export_to_csv(qgis, layername, node_filename, outputFieldPre
         QgsMapLayerRegistry.instance().removeMapLayer(layer.id())
         
         qgis.mainWindow().statusBar().showMessage('Deleting temporary shapefile...')
-        os.remove(outputFilePrefix+'_temp.cpg')
+        #os.remove(outputFilePrefix+'_temp.cpg')
         #os.remove(outputFilePrefix+'_temp.dbf')
-        os.remove(outputFilePrefix+'_temp.prj')
-        os.remove(outputFilePrefix+'_temp.qpj')
+        #os.remove(outputFilePrefix+'_temp.prj')
+        #os.remove(outputFilePrefix+'_temp.qpj')
         #os.remove(outputFilePrefix+'_temp.shp')
         #os.remove(outputFilePrefix+'_temp.shx')
-        os.remove(outputFilePrefix+'_simplified.cpg')
-        os.remove(outputFilePrefix+'_simplified.prj')
-        os.remove(outputFilePrefix+'_simplified.qpj')
+        #os.remove(outputFilePrefix+'_simplified.cpg')
+        #os.remove(outputFilePrefix+'_simplified.prj')
+        #os.remove(outputFilePrefix+'_simplified.qpj')
         
     
     message = unicode(feature_count) + " records exported"
@@ -460,6 +588,52 @@ def encodedPolyline_export_to_csv(qgis, layername, node_filename, outputFieldPre
 
         
     return None
+
+def fSimplify(fgeom, thresholds, tolerances):
+    farea = fgeom.area()
+    thresholdIndex = getThresholdIndex(farea, thresholds)
+    if(thresholdIndex is not None):
+        if( thresholdIndex < len(tolerances)-1 ) :
+            tolerance = tolerances[thresholdIndex]
+    
+            if(tolerance is not None):
+                return fgeom.simplify(tolerance)
+    
+    return fgeom
+
+
+def isGeomValid(geom, id):
+    if (geom is not None):
+        #if (geom.isGeosValid() and not geom.isGeosEmpty()):
+        if (not geom.isGeosEmpty()):
+            return True
+        else:
+            #print ('Geometry ' + id + ' cannot be simplified since resulting geometry would be empty.  Using unsimplified feature instead.')
+            return False
+    else:
+        #print ('Geometry ' + id + ' cannot be simplified since resulting gemotry would be "None".  Using unsimplified feature instead.')
+        return False
+
+
+def isBranchValid(geom, id):
+    if (geom is not None):
+        if (geom.isGeosValid() and not geom.isGeosEmpty()):
+            return True
+        else:
+            #print ('Geometry ' + id + ' cannot be simplified since resulting geometry would be invalid or empty.  Using unsimplified feature instead.')
+            return False
+    else:
+        #print ('Geometry ' + id + ' cannot be simplified since resulting gemotry would be "None".  Using unsimplified feature instead.')
+        return False
+    
+
+def getThresholdIndex(x, valList):
+    i = 0
+    while i < len(valList)-1:
+        if x>valList[i] and x<=valList[i+1]:
+            return i
+        i += 1
+    
 
     
 def encodeCoord(x):

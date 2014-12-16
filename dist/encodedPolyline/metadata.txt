@@ -11,8 +11,8 @@
 [general]
 name=Encoded Polyline Exporter
 qgisMinimumVersion=2.0
-description=Export a vector layer to a .csv file in Encoded Polyline format
-version=0.2.1
+description=Export a vector layer to a .csv file in Encoded Polyline format, with optional geometry simplification
+version=0.3
 author=Patrick Vinton
 email=patrickvinton@hotmail.com
 
@@ -21,7 +21,7 @@ email=patrickvinton@hotmail.com
 # Optional items:
 
 # Uncomment the following line and add your changelog entries:
-changelog=hotfix for last-file-saved function
+changelog=added functions for automatic simplification of geometry before export
 
 # tags are comma separated with spaces allowed
 tags=encoded polyline, polyline export, polyline, encode, export, csv

@@ -11,12 +11,9 @@
 [general]
 name=Encoded Polyline Exporter
 qgisMinimumVersion=2.0
+qgisMaximumVersion=2.18
 description=Export a vector layer to a .csv file in Encoded Polyline format
-<<<<<<< HEAD
-version=0.2
-=======
 version=0.2.1
->>>>>>> origin/dev
 author=Patrick Vinton
 email=patrickvinton@hotmail.com
 

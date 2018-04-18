@@ -85,8 +85,6 @@ class encodedPolyline:
 
 def encodedPolyline_export_to_csv(qgis, layername, node_filename, outputFieldPrefix, field_delimiter, line_terminator):
     layer = find_layer(layername)
-<<<<<<< HEAD
-=======
     
     forwardSlashIndex = node_filename[::-1].find("/")
     backSlashIndex = node_filename[::-1].find("\\") 
@@ -101,7 +99,6 @@ def encodedPolyline_export_to_csv(qgis, layername, node_filename, outputFieldPre
         slashIndex = forwardSlashIndex+1
     else:
         slashIndex = backSlashIndex+1
->>>>>>> origin/dev
 
     if (layer == None) or (layer.type() != QgsMapLayer.VectorLayer):
         return "Invalid Vector Layer " + layername

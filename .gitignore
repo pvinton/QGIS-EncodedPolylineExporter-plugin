@@ -1,1 +1,6 @@
 *.pyc
+.vscode/settings.json
+dist/encodedPolyline.zip
+dist/encodedPolyline/.vscode/settings.json
+dist/encodedpolylineexporter.zip
+dist/encodedpolylineexporter/.vscode/settings.json

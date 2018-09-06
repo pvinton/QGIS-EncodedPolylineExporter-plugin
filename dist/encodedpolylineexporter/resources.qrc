@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/encoded_polyline_exporter" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
